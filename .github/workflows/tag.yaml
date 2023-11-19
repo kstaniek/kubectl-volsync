@@ -1,0 +1,46 @@
+name: Build kubectl-volsync
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    name: Build kubectl-volsync
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Grab tags
+        run: git fetch --force --tags
+
+      - name: Export version to variable
+        run: echo "VOLSYNC_VERSION=$(cat version)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Checkout Upstream volsync
+        uses: actions/checkout@v4
+        with:
+          repository: backube/volsync
+          path: volsync
+          ref: v${{ env.VOLSYNC_VERSION }}
+          fetch-depth: 1
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: stable
+
+      - uses: goreleaser/goreleaser-action@v5
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
