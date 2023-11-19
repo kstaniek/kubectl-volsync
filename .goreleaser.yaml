@@ -1,0 +1,37 @@
+project_name: kubectl-volsync
+
+changelog:
+  skip: true
+
+krews:
+  - name: volsync
+    repository:
+      owner: "kstaniek"
+      name: "kubectl-volsync"
+    homepage: https://github.com/backube/volsync
+    short_description: "Manage replication with the VolSync operator"
+    description: |
+      This plugin provides a set of commands to interact with the VolSync
+      operator.
+
+      It provides an easy method to perform several common data replication
+      workflows without directly creating/manipulating VolSync's CRs.
+
+builds:
+  - dir: ./volsync/kubectl-volsync/
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "{{ .ProjectName }}_sha256_checksums.txt"
+  algorithm: sha256
